@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">SafeCode!</string>
+    <string name="title_activity_safe">My Private Safe!</string>
+    <string name="logo_desc">finger print logo..</string>
+    <string name="finger_desc">your finger print please :)</string>
+    <string name="title">Safe!</string>
+    <string name="btn_save_title">Save!</string>
+    <string name="btn_cancel_title">Cancel</string>
+</resources>
