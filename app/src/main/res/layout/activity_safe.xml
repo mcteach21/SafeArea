@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/background_dark"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".SafeActivity">
+    tools:context="mc.apps.safe.SafeActivity">
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -23,7 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+<!--    <Button
         android:id="@+id/btn_add"
         android:layout_width="48dp"
         android:layout_height="53dp"
@@ -63,5 +63,5 @@
         app:layout_constraintBottom_toTopOf="@+id/btn_add"
         app:layout_constraintEnd_toStartOf="@+id/btn_menu_1"
         app:layout_constraintHorizontal_bias="0.952"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
