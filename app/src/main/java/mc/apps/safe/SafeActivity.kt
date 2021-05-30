@@ -1,8 +1,11 @@
 package mc.apps.safe
 
-import android.content.DialogInterface
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -28,36 +31,12 @@ class SafeActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter : FromDbAdapter
+    private val TAG = "tests"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_safe)
         setList()
-
-      /*  val dao = Dao(SafeActivity@this)
-        val list = dao.all()
-
-        *//*dao.create("EDF: dady120@hotmail.fr",AESCrypt.encrypt("Adnyl_123"))
-        dao.create("SFR: mehdi.chouarbi@sfr.fr",AESCrypt.encrypt("Adnyl_987"))*//*
-
-        Log.i("tests","**********************************************************")
-        list.forEach{
-             item -> Log.i("tests","item : ${item.login} : ${item.password} [${AESCrypt.decrypt(item.password)}]")
-        }
-        Log.i("tests","**********************************************************")*/
-
-        /*btn_add.setOnClickListener {
-            *//*snackbar_show(main_layout, "Hello!","Action!!",View.OnClickListener {
-                Toast.makeText(this,"That's it!",Toast.LENGTH_SHORT).show()
-            })*//*
-            openDialog()
-
-          *//*  Util.circleAppear(btn_menu_1)
-            Util.circleAppear(txt_menu_1)*//*
-        }*/
-        /*btn_menu_1.setOnClickListener {
-            openDialog()
-        }*/
     }
     private fun openDialog() {
         val alertDialogBuilder = AlertDialog.Builder(this)
@@ -83,10 +62,11 @@ class SafeActivity : AppCompatActivity() {
             val name = dialogView.findViewById<EditText>(R.id.inputName).text.toString()
             val password = dialogView.findViewById<EditText>(R.id.inputPassword).text.toString()
             val login = dialogView.findViewById<EditText>(R.id.inputLogin).text.toString()
+            val url = dialogView.findViewById<EditText>(R.id.inputUrl).text.toString()
 
             if(name.isNotEmpty() && password.isNotEmpty() && login.isNotEmpty()) {
                 val dao = Dao(SafeActivity@ this)
-                var ok = dao.create(name, login, AESCrypt.encrypt(password), "")
+                var ok = dao.create(name, login, AESCrypt.encrypt(password), url)
                 if (ok) {
                     toast("Item inserted! :)")
                     adapter.refresh()
@@ -103,26 +83,9 @@ class SafeActivity : AppCompatActivity() {
         snackbar.setAction(action, callback)
         snackbar.setActionTextColor(Color.YELLOW)
         snackbar.show()
-
-        /*
-            val snackbar = Snackbar
-                .make(
-                    main_layout,
-                    "Removed from list!",
-                    Snackbar.LENGTH_LONG
-                )
-            snackbar.setAction("UNDO") {
-                *//*adapter.notifyDataSetChanged()
-                                 recyclerView.scrollToPosition(position)*//*
-                                Toast.makeText(this@SafeActivity, "Yes!!", Toast.LENGTH_SHORT).show()
-                            }
-
-                snackbar.setActionTextColor(Color.YELLOW)
-                snackbar.show()
-          */
     }
     override fun onBackPressed() {
-        super.onBackPressed()
+        //super.onBackPressed()
         setList()
     }
     private fun setList() {
@@ -137,7 +100,6 @@ class SafeActivity : AppCompatActivity() {
 
         adapter = FromDbAdapter(
             this,
-            //null,
             object : FromDbAdapter.OnItemClickListener {
                 override fun onItemClick(postion:Int, item: String) {
                    Toast.makeText(this@SafeActivity, "Click on $item", Toast.LENGTH_SHORT).show()
@@ -164,11 +126,18 @@ class SafeActivity : AppCompatActivity() {
                     "Copy",
                     View.OnClickListener {
                         Toast.makeText(applicationContext, "${AESCrypt.decrypt(item.password)} : password copied!", Toast.LENGTH_SHORT).show()
+                        copyToClipboard(AESCrypt.decrypt(item.password))
                         setList()
                     })
-
                 return AESCrypt.decrypt(item.password)
             }
+
+            private fun copyToClipboard(text: String) {
+                val clipboard : ClipboardManager  = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val  clip : ClipData = ClipData.newPlainText("Copied Password", text);
+                clipboard.setPrimaryClip(clip)
+            }
+
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
                 val position = viewHolder.adapterPosition
@@ -227,7 +196,6 @@ class SafeActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_safe, menu)
         return true
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.add_action -> {
@@ -235,9 +203,28 @@ class SafeActivity : AppCompatActivity() {
                 true
             }
             R.id.export_action -> {
+                shareData()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun shareData() {
+        val dao = Dao(SafeActivity@this)
+        val list = dao.all()
+        val items = StringBuilder()
+        list.forEach{
+             //   item -> Log.i(TAG,"item : ${item.login} : ${item.password} [${AESCrypt.decrypt(item.password)}]")
+            items.append("["+it.name+"]"+it.login+":"+it.password+"\n")
+        }
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, items.toString())
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, "Share Passwords!")
+        startActivity(shareIntent)
     }
 }
