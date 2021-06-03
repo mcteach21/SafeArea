@@ -102,7 +102,7 @@ class SafeActivity : AppCompatActivity() {
             this,
             object : FromDbAdapter.OnItemClickListener {
                 override fun onItemClick(postion:Int, item: String) {
-                   Toast.makeText(this@SafeActivity, "Click on $item", Toast.LENGTH_SHORT).show()
+                   //Toast.makeText(this@SafeActivity, "Click on $item", Toast.LENGTH_SHORT).show()
                 }
             }
         )
@@ -204,6 +204,10 @@ class SafeActivity : AppCompatActivity() {
             }
             R.id.export_action -> {
                 shareData()
+                true
+            }
+            R.id.exit_action -> {
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -79,7 +79,7 @@ abstract class McSwipeCallback(private val context: Context) : ItemTouchHelper.C
         val itemHeight = itemView.height
 
         val background = ColorDrawable()
-        background.color = Color.LTGRAY
+        background.color = Color.TRANSPARENT
         background.setBounds(
             itemView.right + dX.toInt(),
             itemView.top,
